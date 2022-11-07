@@ -1,0 +1,230 @@
+
+		--- Services ---
+		local userInputService = game:GetService("UserInputService")
+		local runservice = game:GetService("RunService")
+
+local ScriptFolder
+if not workspace:findFirstChild("D00M Instances") then
+ScriptFolder = Instance.new("Folder",workspace)
+ScriptFolder.Name = "D00M Instances"
+else
+ScriptFolder = workspace:WaitForChild("D00M Instances") 
+end
+
+		--for i,obj in pairs(ScriptFolder:GetChildren()) do
+		--    if obj.Name == "D00M Zombie" then
+		--        obj:Destroy()
+		--    end
+		--end 
+		if not ScriptFolder:findFirstChild("D00M Zombie") then
+			local zombie = game:GetObjects("rbxassetid://10941490996")[1]
+			zombie.Parent = ScriptFolder
+			zombie.Name = "D00M Zombie"
+
+			zombie.Humanoid.NameDisplayDistance = 0
+			zombie.HumanoidRootPart.CFrame = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0)
+
+			for i,v in pairs(zombie:GetChildren()) do
+				if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
+					_G.ZCreate(v,false,0.07)
+				end
+			end
+			
+			wait(0.5)
+			
+			local function QMYBKK_fake_script() -- Zombie AI 
+				local script = Instance.new('Script', zombie)
+				--Fully made by Rufus14
+				--animations are made with :lerp() and sine waves
+				--you can convert the model to use it in script builder
+				local npc = script.Parent
+				local torso = npc.Torso
+				local head = npc.Head
+				local leftarm = npc["Left Arm"]
+				local rightarm = npc["Right Arm"]
+				local leftleg = npc["Left Leg"]
+				local rightleg = npc["Right Leg"]
+				local npchumanoid = npc:findFirstChildOfClass("Humanoid")
+				sine = 0
+				--Motor6D's
+				local neck = torso.Neck
+				neck.C1 = CFrame.new(0,0,0)
+				local leftshoulder = torso["Left Shoulder"]
+				leftshoulder.C1 = CFrame.new(0,0,0)
+				local rightshoulder = torso["Right Shoulder"]
+				rightshoulder.C1 = CFrame.new(0,0,0)
+				local lefthip = torso["Left Hip"]
+				lefthip.C1 = CFrame.new(0,0,0)
+				local righthip = torso["Right Hip"]
+				righthip.C1 = CFrame.new(0,0,0)
+				step = game:GetService("RunService").Stepped
+				if npc:findFirstChild("HumanoidRootPart") then
+					if npc.HumanoidRootPart:findFirstChild("RootJoint") then
+						root = npc.HumanoidRootPart.RootJoint
+						root.C1 = CFrame.new(0,0,0)
+					elseif npc.HumanoidRootPart:findFirstChild("Root Hip") then
+						root = npc.HumanoidRootPart["Root Hip"]
+						root.C1 = CFrame.new(0,0,0)
+					end
+				else
+					npchumanoid.Health = 0
+				end
+				--
+				local sight = 80
+				local walking = false
+				local attacking = false
+				local cansay = true
+				local ragdolldeath = true
+				local caninfect = true
+				local canrandomwalk = true
+				local saycooldown = 0
+				function walkanim(walkspeed)
+					if walkspeed > 2 then
+						walking = true
+					else
+						walking = false
+					end
+				end
+				npchumanoid.Running:connect(walkanim)
+				function walkrandomly()
+					while wait(math.random(3,6)) and zombie and zombie:findFirstChild("Head") do
+						if not walking and canrandomwalk then
+							npchumanoid.WalkSpeed = 7
+							local function createwalkpart()
+								local walkpart = Instance.new("Part", npc)
+								walkpart.Size = Vector3.new(1,1,1)
+								walkpart.Anchored = true
+								walkpart.Material = "Neon"
+								walkpart.Transparency = 1
+								walkpart.BrickColor = BrickColor.new("Maroon")
+								walkpart.CFrame = torso.CFrame * CFrame.new(math.random(-60,60),math.random(-30,30),math.random(-60,60))
+								local path = game:GetService("PathfindingService"):FindPathAsync(torso.Position, walkpart.Position)
+								local waypoints = path:GetWaypoints()
+								if path.Status == Enum.PathStatus.Success then
+									for i,v in pairs(waypoints) do
+										if canrandomwalk then
+											npchumanoid:MoveTo(v.Position)
+											local allow = 0
+											while (torso.Position - v.Position).magnitude > 4 and allow < 25 do
+												allow = allow + 1
+												wait()
+											end
+											if v.Action == Enum.PathWaypointAction.Jump then
+												npchumanoid.Jump = true
+											end
+										end
+									end
+									for i,v in pairs(npc:GetChildren()) do
+										if v.Name == "pospart" then
+											v:destroy()
+										end
+									end
+								else
+									createwalkpart()
+									wait()
+								end
+							end
+							createwalkpart()
+						end
+					end
+				end
+				function chase()
+					while true and zombie and zombie:findFirstChild("Head") do
+						if not walking then
+							for i,v in pairs(workspace:GetChildren()) do
+								if v:findFirstChildOfClass("Humanoid") and v:findFirstChild("Head") and v.Name ~= zombie.Name and v.Name ~= game:GetService("Players").LocalPlayer.Name and v.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) and v.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) then
+									if (v:findFirstChild("Head").Position - npc.Head.Position).magnitude < sight then
+										canrandomwalk = false
+										local thehumanoid = v:findFirstChildOfClass("Humanoid")
+										local pathfinding = false
+										local thehead = v:findFirstChild("Head")
+										while (thehead.Position - npc.Head.Position).magnitude < sight and thehumanoid.Health > 0 do
+											npchumanoid.WalkSpeed = 20
+											npchumanoid:MoveTo(thehead.Position, thehead)
+											local path = game:GetService("PathfindingService"):FindPathAsync(torso.Position, thehead.Position) --find the path from scp's torso to victims head
+											local waypoints = path:GetWaypoints() --get the every point of the path
+											if path.Status == Enum.PathStatus.Success then
+												for q,w in pairs(waypoints) do --for every point existing..
+													if q ~= 1 then
+														local allow = 0
+														npchumanoid:MoveTo(w.Position, thehead) --...walk to it
+														while (torso.Position - w.Position).magnitude > 3.8 and allow < 20 do
+															allow = allow + 1
+															game:GetService("RunService").Heartbeat:wait()
+														end
+														if w.Action == Enum.PathWaypointAction.Jump then
+															npchumanoid.Jump = true
+														end
+														if thehumanoid.Health <= 0 then
+															break
+														end
+													end
+												end
+												for q,w in pairs(npc:GetChildren()) do
+													if w.Name == "pospart" then
+														w:destroy()
+													end
+												end
+											else
+												npchumanoid:MoveTo(thehead.Position, thehead)
+											end
+											wait()
+										end
+										canrandomwalk = true
+									else
+										canrandomwalk = true
+									end
+								end
+							end
+						end
+						wait()
+					end
+				end
+				candmg = true
+				function damage(part)
+					if part.Parent:findFirstChildOfClass("Humanoid") and part.Name ~= "pospart" and candmg then
+						if part.Parent:findFirstChildOfClass("Humanoid").Health <= 4 and part.Parent:findFirstChildOfClass("Humanoid").Health > 0 then
+							if part.Parent.Name ~= game:GetService("Players").LocalPlayer.Name and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) then
+								part.Parent.Head.CFrame = CFrame.new(part.Parent.Head.Position, head.Position)
+								_G.ZKill(part.Parent.Name)
+								wait(0.3)
+							else
+								return
+							end
+						else
+							if part.Parent.Name ~= game:GetService("Players").LocalPlayer.Name and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) then
+								_G.ZKill(part.Parent.Name)
+								wait(0.3)
+							else
+								return
+							end
+						end
+					end
+				end
+				torso.Touched:connect(damage)
+				spawn(walkrandomly)
+				spawn(chase)
+				while step:wait() and zombie and zombie:findFirstChild("Head") do --check animations and other things
+					sine = sine + 1
+					if not walking then
+						neck.C0 = neck.C0:lerp(CFrame.new(0,1.2,0) * CFrame.Angles(math.sin(sine/30)/10,0,0) * CFrame.new(0,0.25,0),0.1)
+						righthip.C0 = righthip.C0:lerp(CFrame.new(0.5,-1-math.cos(sine/30)/15,0) * CFrame.Angles(math.rad(10+(2*math.sin(-sine/30))),0,-math.sin(sine/60)/10) * CFrame.new(0,-1,0),0.1)
+						lefthip.C0 = lefthip.C0:lerp(CFrame.new(-0.5,-1-math.cos(sine/30)/15,0) * CFrame.Angles(math.rad(10+(2*math.sin(-sine/30))),0,-math.sin(sine/60)/10) * CFrame.new(0,-1,0),0.1)
+						root.C0 = root.C0:lerp(CFrame.new(0,math.cos(sine/30)/15,0) * CFrame.Angles(math.rad(-10+(2*math.sin(sine/30))),0,math.sin(sine/60)/15),0.1)
+						rightshoulder.C0 = rightshoulder.C0:lerp(CFrame.new(1.5,0.5,0) * CFrame.Angles(math.rad(20)+math.rad(5*math.sin(sine/30)),0,math.rad(5*math.cos(sine/30)/2)) * CFrame.new(0,-0.5,0),0.1)
+						leftshoulder.C0 = leftshoulder.C0:lerp(CFrame.new(-1.5,0.5,0) * CFrame.Angles(math.rad(20)-math.rad(5*math.sin(sine/30)),0,-math.rad(5*math.cos(sine/30)/2)) * CFrame.new(0,-0.5,0),0.1)
+					end
+					if walking then --this is the walking animation
+						leftshoulder.C0 = leftshoulder.C0:lerp(CFrame.new(-1.5,0.5,0) * CFrame.Angles(math.rad(100-math.cos(sine/5)*10),0,math.rad(math.sin(sine/10)*10)) * CFrame.new(0,-0.5,0),0.1)
+						rightshoulder.C0 = rightshoulder.C0:lerp(CFrame.new(1.5,0.5,0) * CFrame.Angles(math.rad(100-math.cos(sine/5)*10),0,math.rad(math.sin(sine/10)*10)) * CFrame.new(0,-0.5,0),0.1)
+						neck.C0 = neck.C0:lerp(CFrame.new(0,1.2,0) * CFrame.Angles(math.rad(10+math.cos(sine/5)*6),0,0) * CFrame.new(0,0.25,0),0.1)
+						root.C0 = root.C0:lerp(CFrame.new(0,math.sin(sine/5)/9,0) * CFrame.Angles(math.rad(-15),0,math.cos(sine/10)/6),0.1)
+						righthip.C0 = righthip.C0:lerp(CFrame.new(0.5,-1+math.cos(sine/10)/3,-math.cos(sine/10)/3) * CFrame.Angles(math.sin(sine/10),0,0) * CFrame.new(0,-1,0),0.1)
+						lefthip.C0 = lefthip.C0:lerp(CFrame.new(-0.5,-1-math.cos(sine/10)/3,math.cos(sine/10)/3) * CFrame.Angles(-math.sin(sine/10),0,0) * CFrame.new(0,-1,0),0.1)
+					end
+				end
+			end
+			coroutine.wrap(QMYBKK_fake_script)()
+		else
+			ScriptFolder:WaitForChild("D00M Zombie").HumanoidRootPart.CFrame = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0)
+		end    
