@@ -132,7 +132,7 @@ end
 					while true and zombie and zombie:findFirstChild("Head") do
 						if not walking then
 							for i,v in pairs(workspace:GetChildren()) do
-								if v:findFirstChildOfClass("Humanoid") and v:findFirstChild("Head") and v.Name ~= zombie.Name and v.Name ~= game:GetService("Players").LocalPlayer.Name and v.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) and v.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) then
+								if v:findFirstChildOfClass("Humanoid") and v:findFirstChild("Head") and v.Name ~= zombie.Name and v.Name ~= game:GetService("Players").LocalPlayer.Name and v.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(949367) and v.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) then
 									if (v:findFirstChild("Head").Position - npc.Head.Position).magnitude < sight then
 										canrandomwalk = false
 										local thehumanoid = v:findFirstChildOfClass("Humanoid")
@@ -184,7 +184,7 @@ end
 				function damage(part)
 					if part.Parent:findFirstChildOfClass("Humanoid") and part.Name ~= "pospart" and candmg then
 						if part.Parent:findFirstChildOfClass("Humanoid").Health <= 4 and part.Parent:findFirstChildOfClass("Humanoid").Health > 0 then
-							if part.Parent.Name ~= game:GetService("Players").LocalPlayer.Name and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) then
+							if part.Parent.Name ~= game:GetService("Players").LocalPlayer.Name and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(949367) and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) then
 								part.Parent.Head.CFrame = CFrame.new(part.Parent.Head.Position, head.Position)
 								_G.ZKill(part.Parent.Name)
 								wait(0.3)
@@ -192,7 +192,7 @@ end
 								return
 							end
 						else
-							if part.Parent.Name ~= game:GetService("Players").LocalPlayer.Name and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) then
+							if part.Parent.Name ~= game:GetService("Players").LocalPlayer.Name and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(949367) and part.Parent.Name ~= game:GetService("Players"):GetNameFromUserIdAsync(3901493494) then
 								_G.ZKill(part.Parent.Name)
 								wait(0.3)
 							else
